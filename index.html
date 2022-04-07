@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Come on, music!</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        .search-container {
+            display: flex;
+            width: 80vw;
+            height: 50px;
+            margin-left: 10vw;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-select {
+            flex: 0;
+            background: url("http://s1.music.126.net/style/favicon.ico") center center no-repeat;
+            overflow: hidden;
+            width: 45px;
+            padding-left: 35px;
+            border-width: 2px;
+            border-radius: 20% 0 0 20%;
+        }
+
+        .search-input {
+            flex: 1;
+            border-left: 0;
+            border-right: 0;
+        }
+
+        .search-btn {
+            flex: 0;
+            border-radius: 0 20% 20% 0;
+            font-weight: bold;
+        }
+
+        .context-container {
+            margin: 0 auto;
+            width: 100vw;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 90px;
+        }
+
+        .context-li {
+            display: flex;
+            margin: 1vw;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            flex: 0 0 40vw;
+            border-radius: 3%;
+            padding: 2vw;
+            box-shadow: 2px 1px 10px #888888;
+            justify-content: center;
+        }
+
+        .context-li div {
+            margin-top: 8px;
+        }
+
+        .context-li-img {
+            flex: 0;
+            width: 90px;
+            height: 90px;
+            margin-right: 10px;
+        }
+
+        .context-li-container {
+            flex: 1 0 25vw;
+        }
+
+        .context-li-title {
+            font-size: large;
+        }
+
+        .context-li-author {
+            color: darkgray;
+        }
+
+        .context-li-button {
+            float: right;
+        }
+
+        .media-audio {
+            position: fixed;
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            width: 95vw;
+            bottom: 3vh;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgb(239, 239, 239);
+            padding: 2vw;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .media-audio img {
+            flex: 0 0 58px;
+            width: 58px;
+            height: 58px;
+            border-radius: 100%;
+            z-index: 100;
+            animation-name: rotate;
+            animation-timing-function: linear;
+            animation-delay: 0.5s;
+            animation-iteration-count: infinite;
+        }
+
+        .media-audio audio {
+            flex: 1;
+        }
+
+        .media-audio button {
+            border: 0;
+            z-index: 100;
+        }
+
+        .mask-layer {
+            position: fixed;
+            display: none;
+            z-index: 999;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            background-color: rgba(91, 91, 91, 0.5);
+        }
+
+        .music-menu-container {
+            position: absolute;
+            bottom: 1vh;
+            width: 100vw;
+            max-height: 50vh;
+            background: gainsboro;
+            padding-top: 10px;
+            padding-bottom: 20px;
+            padding-right: 5vw;
+        }
+
+        .music-menu-title-container {
+            margin-left: 4vw;
+            margin-bottom: 10px;
+        }
+
+        .music-menu-list-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            overflow: scroll;
+        }
+
+        .music-menu-list {
+            border-bottom: 1px solid gray;
+            min-height: 35px;
+            width: 90vw;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .toast-tag-container {
+            position: fixed;
+            width: 100vw;
+            top: 0;
+            margin-top: 35vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 0;
+                transform: translateY(50%);
+            }
+
+            5% {
+                opacity: 1;
+                transform: translateY(0%);
+            }
+
+            95% {
+                opacity: 1;
+                transform: translateY(0%);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(50%);
+            }
+        }
+
+        .toast-tag {
+            z-index: 9999;
+            background-color: #888888;
+            padding: 8px;
+            padding-top: 4px;
+            max-width: 50vw;
+            border-radius: 15px;
+            color: white;
+            opacity: 0;
+            animation: fade 2.5s linear 0s 1;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 搜索栏 -->
+    <div class="search-container">
+        <select class="search-select" title="music-platform" onchange="handleSelect(event)"></select>
+        <input class="search-input" type="search" placeholder="😝留下你喜欢的音乐，万一找到了呢" onchange="handleInput(event)"
+            onkeyup="keyEnterSearch(event)" />
+        <button class="search-btn" type="button" onclick="btnPressSearch(event)">Come on!</button>
+    </div>
+    <!-- 搜索内容 -->
+    <div class="context-container"> </div>
+    <div class="media-audio">
+        <img src="http://s1.music.126.net/style/favicon.ico" alt="">
+        <audio src="" controls loop>您的浏览器不支持 audio 标签。</audio>
+        <button onclick="handleShowMaskLayer(event)">≡</button>
+    </div>
+    <!-- 播放器 -->
+    <div class="mask-layer" onclick="handleHideMaskLayer(event)">
+        <div class="music-menu-container">
+            <div class="music-menu-title-container"><strong>≡ 我的歌单</strong></div>
+            <div class="music-menu-list-container"></div>
+        </div>
+    </div>
+    <!-- Toast -->
+    <div class="toast-tag-container"> </div>
+
+</body>
+
+<script type="text/javascript">
+    // 业务
+    const toast = (msg) => {
+        const toastTag = document.querySelector('.toast-tag-container');
+        toastTag.innerHTML = `<div class="toast-tag">${msg}</div>`;
+        setTimeout(() => {
+            toastTag.innerHTML = null;
+        }, 3000);
+    };
+    // 搜索栏
+    const selectTypeArr = [
+        { value: 'netease', title: '网易', disabled: false, icon: 'http://s1.music.126.net/style/favicon.ico' },
+        { value: 'qq', title: 'QQ', disabled: false, icon: 'http://y.qq.com/favicon.ico' },
+        { value: 'kugou', title: '酷狗', disabled: true, icon: 'https://www.kugou.com/root/favicon.ico' },
+        { value: 'migu', title: '咪咕', disabled: true, icon: 'https://s.cn.bing.net/th?id=ODLSF.d79c8cc5-2d8a-49ef-bda7-ffe10982d52d&w=16&h=16&o=6&pid=1.2' },
+        { value: 'ximalaya', title: '喜马拉雅', disabled: true, icon: 'https://s.cn.bing.net/th?id=ODLSF.9b7cf6e3-cd3d-4033-ae7e-0c97be706781&w=16&h=16&o=6&pid=1.2' },
+        { value: 'kg', title: '全民K歌', disabled: true, icon: 'https://s.cn.bing.net/th?id=ODLSF.ccdd0eb2-1937-4002-bdcd-dbfc3a68be88&w=16&h=16&o=6&pid=1.2' },
+    ];
+    const selectTag = document.querySelector('.search-select');
+    const audioTag = document.querySelector('audio');
+    const audioImgTag = document.querySelector('.media-audio img');
+
+    selectTag.innerHTML = selectTypeArr.map(({ value, title, disabled, icon }) => disabled ? `
+    <option value="${value}" label="${title}" disabled></option>
+    ` : `
+    <option value="${value}" label="${title}"></option>
+    `).join('');
+
+    let searchType = selectTypeArr[0].value;
+    let searchVal;
+    const handleSelect = (evt) => {
+        searchType = evt.target.value;
+        const findSelectType = selectTypeArr.find(({ value }) => value === searchType);
+        selectTag.style = `background-image: url(${findSelectType.icon});`;
+        audioImgTag.src = findSelectType.icon;
+    };
+    const handleInput = (evt) => {
+        searchVal = evt.target.value;
+    };
+
+    // 播放器
+    let curPlayMusicId = 0;
+    let curMusicTag;
+    const playCurMusic = () => {
+        const curMusic = musicListArr.find(({ musicId }) => musicId === curPlayMusicId);
+        audioImgTag.src = curMusic.pic;
+        audioTag.src = curMusic.url;
+        audioTag.play();
+        if (curMusicTag) curMusicTag.style = 'color: black;';
+        curMusicTag = document.getElementById(curPlayMusicId);
+        curMusicTag.style = 'color: red;';
+    };
+    const changeAudioImgTagRotateDur = () => {
+        const rotateDur = 4 - parseFloat(audioTag.playbackRate);
+        audioImgTag.style = `animation-duration: ${rotateDur}s;`;
+    };
+    audioTag.onratechange = () => {
+        changeAudioImgTagRotateDur();
+    };
+    audioTag.onplay = () => {
+        changeAudioImgTagRotateDur();
+    };
+    audioTag.onpause = () => {
+        audioImgTag.style = `animation-duration: 0;`;
+    };
+    let errorContinue = true;
+    audioTag.onerror = () => {
+        if (curMusicTag) toast('这首歌好像走丢了，要不再去搜索找找看吧😭');
+        if (!errorContinue) return;
+        if (curMusicTag) {
+            curMusicTag.style = 'color: grey;';
+            musicListArr[curPlayMusicId].disabled = true;
+            searchVal = curMusicTag.innerText.replace(/[-😭]/g, '');
+            console.log(searchVal);
+            handleSearch();
+            curPlayMusicId = (curPlayMusicId >= musicListArr.length - 1) ? 0 : curPlayMusicId + 1;
+        }
+        curMusicTag = null;
+        playCurMusic();
+    };
+    audioTag.onended = () => {
+        curPlayMusicId = (curPlayMusicId >= musicListArr.length - 1) ? 0 : curPlayMusicId + 1;
+        playCurMusic();
+    };
+    const handleAudioLoopPlay = (pic, url) => {
+        errorContinue = false;
+        audioTag.currentTime = 0;
+        audioTag.src = url;
+        audioImgTag.src = pic;
+        audioTag.play();
+        audioTag.loop = true;
+        if (curMusicTag) curMusicTag.style = 'color: black;';
+    };
+    const handleAudioCirclePlay = (id = curPlayMusicId) => {
+        errorContinue = true;
+        id = parseInt(id);
+        curPlayMusicId = id;
+        audioTag.preload = true;
+        audioTag.loop = false;
+        playCurMusic();
+    };
+
+    // 搜索
+    const keyEnterSearch = (evt) => {
+        // 按Enter
+        if (!(evt && event.keyCode === 13)) return;
+        handleSearch();
+    };
+    const btnPressSearch = async (evt) => {
+        // 点击btn
+        if (!evt) return;
+        const { innerText, disabled } = evt.target;
+        evt.target.disabled = true;
+        evt.target.innerText = 'loading...';
+        await handleSearch();
+        evt.target.disabled = false;
+        evt.target.innerText = innerText;
+    };
+    let searchedVal, searchedType, searchTime, searchedTime;
+    const handleSearch = async () => {
+        if (Date.parse(new Date()) - searchTime < 2000) return;
+        searchTime = Date.parse(new Date());
+        if (searchedVal === searchVal && searchedType === searchType && Date.parse(new Date()) - searchedTime < 30000) return;
+        const contextTag = document.querySelector('.context-container');
+        if (!searchVal) {
+            contextTag.innerHTML = null;
+            return;
+        }
+        const paramsIn = {
+            input: searchVal,
+            type: searchType
+        };
+        const data = await fetchEggvod(paramsIn, 'f.data');
+        if (!(data && data.length)) return;
+        contextTag.innerHTML = data.map(({ pic, title, author, link, url }) => url ? `
+        <div class="context-li" onclick="handleAudioLoopPlay('${pic}','${url}')">
+            <img class="context-li-img" src="${pic}"></img>
+            <div class="context-li-container">
+                <div class="context-li-title"><strong>${title}</strong></div>
+                <div class="context-li-author"><strong>作者：</strong>${author}</div>
+                <button class="context-li-button" onclick="handleAddtoMenu(event,'${pic}','${title}','${author}','${url}')">+</button>
+            </div>
+        </div>
+        ` : '').join('');
+        toast('找到啦，看看有没有你想要的🤗');
+        searchedVal = searchVal;
+        searchedType = searchType;
+        searchedTime = Date.parse(new Date());
+    };
+    const fetchEggvod = async (paramsIn, field = '') => {
+        const myHeaders = new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+        });
+        const { input, type } = paramsIn;
+        const raw = `input=${input}&filter=name&type=${type}&page=1&playUrl=`;
+
+        const requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+        return new Promise((resolve) => fetch('/www.eggvod.cn/newmusic/', requestOptions).then((response) => {
+            return response.json();
+        }).then((rst) => {
+            resolve(field.split('.').reduce((r, f) => r[f] || r, rst));
+        }).catch((err) => {
+            console.error('[fetch error!]' + err);
+        }));
+    };
+
+    // 歌单
+    const maskLayer = document.querySelector('.mask-layer');
+    const showMaskLayer = () => {
+        maskLayer.style = 'display: block;';
+    };
+    const hideMaskLayer = () => {
+        maskLayer.style = 'display: none;';
+    };
+    const handleHideMaskLayer = (evt) => {
+        evt.stopPropagation();
+        evt.preventDefault();
+        hideMaskLayer();
+    };
+    const handleShowMaskLayer = (evt) => {
+        evt.stopPropagation();
+        showMaskLayer();
+    };
+
+    let musicListArr = JSON.parse(localStorage.getItem('mymusic')) || [];
+    const musicMenuTag = document.querySelector('.music-menu-list-container');
+    const setMusicMenuTag = () => {
+        musicMenuTag.innerHTML = musicListArr.map(({ musicId, pic, title, author, url, disabled }) => `
+        <div class="music-menu-list" id="${musicId}" style="${disabled ? 'color:grey;' : ''}" onclick="handleAudioCirclePlay(${musicId})">${title} - ${author}<span>${disabled ? '😭' : ''}<button onclick="handleRemoveMenu(event, ${musicId})">-</button></span></div>
+        `).join('');
+    };
+    setMusicMenuTag();
+    const handleAddtoMenu = (evt, pic, title, author, url) => {
+        evt.stopPropagation();
+        musicListArr.push({ musicId: musicListArr.length, pic, title, author, url });
+        storeMusicList();
+        setMusicMenuTag();
+        toast('是我想要的，已加入歌单！🥰');
+    };
+    const handleRemoveMenu = (evt, id) => {
+        evt.stopPropagation();
+        musicListArr = musicListArr.filter(({ musicId }) => musicId !== id);
+        storeMusicList();
+        setMusicMenuTag();
+        toast('分别总是在九月~😟');
+    };
+    const storeMusicList = () => {
+        localStorage.setItem('mymusic', JSON.stringify(musicListArr));
+    };
+    window.onbeforeunload = () => {
+        storeMusicList();
+    }
+</script>
+
+</html>
