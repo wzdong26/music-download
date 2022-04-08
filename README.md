@@ -9,7 +9,7 @@
 
 ## 📱 Page
 
-[music-download/appview.png at main · wzdong26/music-download (github.com)](https://github.com/wzdong26/music-download/blob/main/appview.png)
+[music-download/appview.png at main · wzdong26/music-download (github.com)](https://github.com/wzdong26/music-download/blob/main/appview.png?raw=true)
 
 ## 🔨 Functions
 
@@ -17,10 +17,10 @@
   - 输入歌名+歌手名，如： 春风十里 鹿先森乐队
   - 搜索结果：
     - 点击结果卡片可单曲循环该首歌曲
-    - 点击卡片的 + 按钮可加入歌单
+    - 点击卡片的 **+** 按钮可加入歌单
 
 - 歌单循环播放
-  - 点击播放器右侧的 ≡ 按钮可展开歌单
+  - 点击播放器右侧的 **≡** 按钮可展开歌单
   - 失效歌曲歌名会显示灰色且有 😭 标识
   - 当前播放歌曲歌名显示为红色
   - 失效歌曲在载入播放时会弹出提示并重新搜索该歌，可在搜索结果中重新加入歌单覆盖原来的失效歌曲
