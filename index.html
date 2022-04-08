@@ -3,13 +3,60 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1">
     <title>Come on, music!</title>
+    <!-- 全局 -->
     <style>
         body {
             margin: 0;
         }
 
+        .toast-tag-container {
+            position: fixed;
+            z-index: 9999;
+            width: 100vw;
+            top: 0;
+            margin-top: 35vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 0;
+                transform: translateY(50%);
+            }
+
+            5% {
+                opacity: 1;
+                transform: translateY(0%);
+            }
+
+            95% {
+                opacity: 1;
+                transform: translateY(0%);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(50%);
+            }
+        }
+
+        .toast-tag {
+            z-index: 9999;
+            background-color: #888888;
+            padding: 8px;
+            padding-top: 4px;
+            max-width: 50vw;
+            border-radius: 15px;
+            color: white;
+            opacity: 0;
+            animation: fade 2.5s linear 0s 1;
+        }
+    </style>
+    <!-- 搜索栏 -->
+    <style>
         .search-container {
             display: flex;
             width: 80vw;
@@ -26,7 +73,7 @@
             width: 45px;
             padding-left: 35px;
             border-width: 2px;
-            border-radius: 20% 0 0 20%;
+            border-radius: 15px 0 0 15px;
         }
 
         .search-input {
@@ -37,10 +84,12 @@
 
         .search-btn {
             flex: 0;
-            border-radius: 0 20% 20% 0;
+            border-radius: 0 15px 15px 0;
             font-weight: bold;
         }
-
+    </style>
+    <!-- 内容区 -->
+    <style>
         .context-container {
             margin: 0 auto;
             width: 100vw;
@@ -89,7 +138,9 @@
         .context-li-button {
             float: right;
         }
-
+    </style>
+    <!-- 播放器栏 -->
+    <style>
         .media-audio {
             position: fixed;
             z-index: 99;
@@ -133,7 +184,9 @@
             border: 0;
             z-index: 100;
         }
-
+    </style>
+    <!-- 歌单区 -->
+    <style>
         .mask-layer {
             position: fixed;
             display: none;
@@ -142,17 +195,18 @@
             height: 100vh;
             top: 0;
             left: 0;
-            background-color: rgba(91, 91, 91, 0.5);
+            background-color: rgba(119, 119, 119, 0.5);
         }
 
         .music-menu-container {
-            position: absolute;
-            bottom: 1vh;
+            position: fixed;
+            bottom: 0;
             width: 100vw;
             max-height: 50vh;
             background: gainsboro;
             padding-top: 10px;
-            padding-bottom: 20px;
+            padding-bottom: constant(safe-area-inset-bottom);
+            padding-bottom: env(safe-area-inset-bottom);
             padding-right: 5vw;
         }
 
@@ -167,6 +221,7 @@
             justify-content: center;
             flex-direction: column;
             overflow: scroll;
+            margin-bottom: 20px;
         }
 
         .music-menu-list {
@@ -177,77 +232,34 @@
             align-items: center;
             justify-content: space-between;
         }
-
-        .toast-tag-container {
-            position: fixed;
-            width: 100vw;
-            top: 0;
-            margin-top: 35vh;
-            display: flex;
-            justify-content: center;
-        }
-
-        @keyframes fade {
-            0% {
-                opacity: 0;
-                transform: translateY(50%);
-            }
-
-            5% {
-                opacity: 1;
-                transform: translateY(0%);
-            }
-
-            95% {
-                opacity: 1;
-                transform: translateY(0%);
-            }
-
-            100% {
-                opacity: 0;
-                transform: translateY(50%);
-            }
-        }
-
-        .toast-tag {
-            z-index: 9999;
-            background-color: #888888;
-            padding: 8px;
-            padding-top: 4px;
-            max-width: 50vw;
-            border-radius: 15px;
-            color: white;
-            opacity: 0;
-            animation: fade 2.5s linear 0s 1;
-        }
     </style>
 </head>
 
-<body>
+<body onscroll="handleScroll()">
     <!-- 搜索栏 -->
     <div class="search-container">
         <select class="search-select" title="music-platform" onchange="handleSelect(event)"></select>
-        <input class="search-input" type="search" placeholder="😝留下你喜欢的音乐，万一找到了呢" onchange="handleInput(event)"
+        <input class="search-input" type="search" placeholder="     找点什么呢🧐" onchange="handleInput(event)"
             onkeyup="keyEnterSearch(event)" />
         <button class="search-btn" type="button" onclick="btnPressSearch(event)">Come on!</button>
     </div>
     <!-- 搜索内容 -->
     <div class="context-container"> </div>
+    <!-- 播放器 -->
     <div class="media-audio">
         <img src="http://s1.music.126.net/style/favicon.ico" alt="">
-        <audio src="" controls loop>您的浏览器不支持 audio 标签。</audio>
+        <audio src="" controls loop>这浏览器有点问题嘞，叫我怎么安心听歌🥴</audio>
         <button onclick="handleShowMaskLayer(event)">≡</button>
     </div>
-    <!-- 播放器 -->
+    <!-- 歌单区 -->
     <div class="mask-layer" onclick="handleHideMaskLayer(event)">
         <div class="music-menu-container">
-            <div class="music-menu-title-container"><strong>≡ 我的歌单</strong></div>
+            <div class="music-menu-title-container"><strong>≡ 📜我的歌单</strong></div>
             <div class="music-menu-list-container"></div>
         </div>
     </div>
     <!-- Toast -->
     <div class="toast-tag-container"> </div>
-
 </body>
 
 <script type="text/javascript">
@@ -257,12 +269,15 @@
 */
 
     // 业务
+    const toastTag = document.querySelector('.toast-tag-container');
     const toast = (msg) => {
-        const toastTag = document.querySelector('.toast-tag-container');
         toastTag.innerHTML = `<div class="toast-tag">${msg}</div>`;
         setTimeout(() => {
             toastTag.innerHTML = null;
         }, 3000);
+    };
+    const handleScroll = () => {
+        console.log('as');
     };
     // 搜索栏
     const selectTypeArr = [
@@ -274,6 +289,7 @@
         { value: 'kg', title: '全民K歌', disabled: true, icon: 'https://s.cn.bing.net/th?id=ODLSF.ccdd0eb2-1937-4002-bdcd-dbfc3a68be88&w=16&h=16&o=6&pid=1.2' },
     ];
     const selectTag = document.querySelector('.search-select');
+    const inputTag = document.querySelector('.search-input');
     const audioTag = document.querySelector('audio');
     const audioImgTag = document.querySelector('.media-audio img');
 
@@ -296,16 +312,15 @@
     };
 
     // 播放器
-    let curPlayMusicId = 0;
-    let curMusicTag;
+    let curPlayMusicId;
     const playCurMusic = () => {
-        const curMusic = musicListArr.find(({ musicId }) => musicId === curPlayMusicId);
+        curPlayMusicId = curPlayMusicId || 0;
+        const curMusic = musicListArr[curPlayMusicId];
         audioImgTag.src = curMusic.pic;
         audioTag.src = curMusic.url;
         audioTag.play();
-        if (curMusicTag) curMusicTag.style = 'color: black;';
-        curMusicTag = document.getElementById(curPlayMusicId);
-        curMusicTag.style = 'color: red;';
+        musicListArr.every(e => e.tag = undefined);
+        musicListArr[curPlayMusicId].tag = true;
     };
     const changeAudioImgTagRotateDur = () => {
         const rotateDur = 4 - parseFloat(audioTag.playbackRate);
@@ -321,18 +336,18 @@
         audioImgTag.style = `animation-duration: 0;`;
     };
     let errorContinue = true;
+    let errorCount = 0;
     audioTag.onerror = () => {
-        if (curMusicTag) toast('这首歌好像走丢了，要不再去搜索找找看吧😭');
+        if (errorCount++ >= musicListArr.length) { errorCount = 0; return; }
+        if (typeof (curPlayMusicId) !== 'undefined') toast('这首歌好像走丢了，要不再去搜索找找看吧😭');
         if (!errorContinue) return;
-        if (curMusicTag) {
-            curMusicTag.style = 'color: grey;';
+        if (typeof (curPlayMusicId) !== 'undefined') {
             musicListArr[curPlayMusicId].disabled = true;
-            searchVal = curMusicTag.innerText.replace(/[-😭]/g, '');
-            console.log(searchVal);
+            const { title, author } = musicListArr[curPlayMusicId];
+            searchVal = `${title} ${author}`;
             handleSearch();
             curPlayMusicId = (curPlayMusicId >= musicListArr.length - 1) ? 0 : curPlayMusicId + 1;
         }
-        curMusicTag = null;
         playCurMusic();
     };
     audioTag.onended = () => {
@@ -346,7 +361,7 @@
         audioImgTag.src = pic;
         audioTag.play();
         audioTag.loop = true;
-        if (curMusicTag) curMusicTag.style = 'color: black;';
+        musicListArr[curPlayMusicId].tag = undefined;
     };
     const handleAudioCirclePlay = (id = curPlayMusicId) => {
         errorContinue = true;
@@ -363,15 +378,12 @@
         if (!(evt && event.keyCode === 13)) return;
         handleSearch();
     };
-    const btnPressSearch = async (evt) => {
+    const searchBtnTag = document.querySelector('.search-btn');
+    const btnPressSearch = (evt) => {
         // 点击btn
         if (!evt) return;
-        const { innerText, disabled } = evt.target;
-        evt.target.disabled = true;
-        evt.target.innerText = 'loading...';
-        await handleSearch();
-        evt.target.disabled = false;
-        evt.target.innerText = innerText;
+        handleSearch();
+
     };
     let searchedVal, searchedType, searchTime, searchedTime;
     const handleSearch = async () => {
@@ -379,16 +391,28 @@
         searchTime = Date.parse(new Date());
         if (searchedVal === searchVal && searchedType === searchType && Date.parse(new Date()) - searchedTime < 30000) return;
         const contextTag = document.querySelector('.context-container');
+        inputTag.value = searchVal;
         if (!searchVal) {
             contextTag.innerHTML = null;
             return;
         }
+        const { innerText, disabled } = searchBtnTag;
+        searchBtnTag.disabled = true;
+        searchBtnTag.innerText = 'loading...';
         const paramsIn = {
             input: searchVal,
             type: searchType
         };
         const data = await fetchEggvod(paramsIn, 'f.data');
-        if (!(data && data.length)) return;
+        if (!(data && data.length)) {
+            toast('别找了找不到了~😵');
+            searchBtnTag.disabled = false;
+            searchBtnTag.innerText = innerText;
+            searchedVal = searchVal;
+            searchedType = searchType;
+            searchedTime = Date.parse(new Date());
+            return;
+        }
         contextTag.innerHTML = data.map(({ pic, title, author, link, url }) => url ? `
         <div class="context-li" onclick="handleAudioLoopPlay('${pic}','${url}')">
             <img class="context-li-img" src="${pic}"></img>
@@ -399,6 +423,11 @@
             </div>
         </div>
         ` : '').join('');
+        searchBtnTag.innerText = '✔️';
+        searchBtnTag.disabled = false;
+        setTimeout(() => {
+            searchBtnTag.innerText = innerText;
+        }, 2000);
         toast('找到啦，看看有没有你想要的🤗');
         searchedVal = searchVal;
         searchedType = searchType;
@@ -418,7 +447,7 @@
             body: raw,
             redirect: 'follow'
         };
-        return new Promise((resolve) => fetch('/www.eggvod.cn/newmusic/', requestOptions).then((response) => {
+        return new Promise((resolve) => fetch('xxxxxxxx--这里就屏蔽掉啦', requestOptions).then((response) => {
             return response.json();
         }).then((rst) => {
             resolve(field.split('.').reduce((r, f) => r[f] || r, rst));
@@ -430,6 +459,7 @@
     // 歌单
     const maskLayer = document.querySelector('.mask-layer');
     const showMaskLayer = () => {
+        setMusicMenuTag();
         maskLayer.style = 'display: block;';
     };
     const hideMaskLayer = () => {
@@ -445,24 +475,41 @@
         showMaskLayer();
     };
 
-    let musicListArr = JSON.parse(localStorage.getItem('mymusic')) || [];
+    let musicListArr = JSON.parse(localStorage.getItem('mymusic')) || [{
+        "musicId": 0,
+        "pic": "http://p2.music.126.net/ylf_QMnt4u0v_F518pn8Ng==/109951165085876142.jpg?param=300x300",
+        "title": "我(国)",
+        "author": "张国荣",
+        "url": "http://m801.music.126.net/20220406232345/c04536e77372fa6e4f48e877a2fb9682/jdymusic/obj/wo3DlMOGwrbDjj7DisKw/6993634023/4184/30f1/870b/0d5239ae4741d8f7da9fdbfdce5ae6d6.mp3"
+    }];
     const musicMenuTag = document.querySelector('.music-menu-list-container');
     const setMusicMenuTag = () => {
-        musicMenuTag.innerHTML = musicListArr.map(({ musicId, pic, title, author, url, disabled }) => `
-        <div class="music-menu-list" id="${musicId}" style="${disabled ? 'color:grey;' : ''}" onclick="handleAudioCirclePlay(${musicId})">${title} - ${author}<span>${disabled ? '😭' : ''}<button onclick="handleRemoveMenu(event, ${musicId})">-</button></span></div>
+        musicMenuTag.innerHTML = musicListArr.map(({ musicId, pic, title, author, url, disabled, tag }) => `
+        <div class="music-menu-list" style="${disabled ? 'color: grey;' : tag ? 'color: red;' : ''}" onclick="handleAudioCirclePlay(${musicId})" ontouch="handlePasteSearch('${title} ${author}')">${title} - ${author}<span>${disabled ? '😭' : ''}<button onclick="handleRemoveMenu(event, ${musicId})">-</button></span></div>
         `).join('');
     };
-    setMusicMenuTag();
+    const handlePasteSearch = (val) => {
+        searchVal = val;
+        handleSearch();
+    };
     const handleAddtoMenu = (evt, pic, title, author, url) => {
         evt.stopPropagation();
-        musicListArr.push({ musicId: musicListArr.length, pic, title, author, url });
+        const findMusic = musicListArr.find(music => music.title === title && music.author === author);
+        if (findMusic) {
+            musicListArr[findMusic.musicId].url = url;
+            musicListArr[findMusic.musicId].disabled = undefined;
+        } else {
+            musicListArr.push({ musicId: musicListArr.length, pic, title, author, url });
+        }
         storeMusicList();
-        setMusicMenuTag();
-        toast('是我想要的，已加入歌单！🥰');
+        toast('终于等到你~🥰');
     };
     const handleRemoveMenu = (evt, id) => {
         evt.stopPropagation();
         musicListArr = musicListArr.filter(({ musicId }) => musicId !== id);
+        for (let i = id; i < musicListArr.length; ++i) {
+            musicListArr[i].musicId = i;
+        }
         storeMusicList();
         setMusicMenuTag();
         toast('分别总是在九月~😟');
