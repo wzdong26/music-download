@@ -9,7 +9,7 @@
 
 ## 📱 Page
 
-[music-download/appview.png at main · wzdong26/music-download (github.com)](https://github.com/wzdong26/music-download/blob/main/appview.png?raw=true)
+![appview](https://github.com/wzdong26/music-download/blob/main/appview.png?raw=true)
 
 ## 🔨 Functions
 
